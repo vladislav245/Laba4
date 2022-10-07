@@ -1,0 +1,235 @@
+#include <iostream>
+#include <string>
+
+
+using namespace std;
+
+
+class Tree {
+
+	Tree* left = nullptr;
+	Tree* right = nullptr;
+
+public:
+	int data;
+
+	Tree() { data = 0; };
+	Tree(int data) : data(data) { };
+
+	void add(int a) {
+		Tree* tmp = new Tree;
+		tmp->data = a;
+		Tree* main = this;
+
+		for (;;) {
+
+			if (main->data > tmp->data) {
+
+				if (main->left == nullptr) {
+					main->left = tmp;
+					break;
+				}
+				else main = main->left;
+			}
+			else {
+
+				if (main->right == nullptr) {
+					main->right = tmp;
+					break;
+				}
+				else main = main->right;
+			}
+		}
+	}
+
+	bool add_unique(int data) {
+		Tree* tmp = new Tree;
+		tmp->data = data;
+		Tree* main = this;
+
+		for (;;) {
+
+			if (main->data == data) {
+				return 0;
+			}
+
+			if (main->data > tmp->data) {
+
+				if (main->left == nullptr) {
+					main->left = tmp;
+					break;
+				}
+				else main = main->left;
+			}
+			else {
+
+				if (main->right == nullptr) {
+					main->right = tmp;
+					break;
+				}
+				else main = main->right;
+			}
+		}
+
+		return 1;
+	}
+
+	string find() {
+
+		int num;
+		int deep = 1;
+		string flue = "H";
+
+		while (true) {
+
+			cout << "Введите число, которое хотите найти: ";
+			cin >> num;
+
+			if (!cin.good()) {
+				cout << endl << "Данное значение не коректно" << endl << endl;
+				cin.clear();
+				cin.ignore(100, '\n');
+				continue;
+			}
+
+			break;
+		}
+
+
+		Tree* main = this;
+		for (;;) {
+
+			if (main->data == num) {
+				cout << "Данное значение есть в дереве" << endl;
+				flue += "  " + std::to_string(deep);
+				return flue;
+			}
+
+			if (main->data > num) {
+				main = main->left;
+				deep++;
+				flue += 'L';
+			}
+			else {
+				main = main->right;
+				deep++;
+				flue += 'R';
+			}
+
+			if (main == nullptr) {
+				cout << "Данного значения нет в дереве" << endl;
+				return " ";
+			}
+		}
+	}
+
+	int repeats(int data) {
+
+		int repeats = 0;
+		Tree* main = this;
+
+		for (;;) {
+
+			if (main->data == data) {
+				repeats++;
+			}
+
+			if (main->data > data) main = main->left;
+			else main = main->right;
+
+			if (main == nullptr) {
+				return repeats;
+			}
+		}
+	}
+
+	friend void print_tree(Tree* r, int l);
+};
+
+
+void print_tree(Tree* r, int l)
+{
+
+	if (r == NULL)
+	{
+		return;
+	}
+
+	print_tree(r->right, l + 1);
+	for (int i = 0; i < l; i++)
+	{
+		printf(" ");
+	}
+
+	printf("%3d\n", r->data);
+	print_tree(r->left, l + 1);
+}
+
+
+int main() {
+
+	setlocale(LC_ALL, "RUS");
+	srand(static_cast<int>(time(NULL)));
+
+	Tree* a = new Tree;
+	cout << "Введите вершину дерева" << endl;
+	cin >> a->data;
+
+	int size = 0;
+
+	int count;
+	cout << "Введите кол-во:";
+	cin >> count;
+	size += count;
+
+	for (int i = 0; i != count; i++) {
+		int data;
+		cout << "Введите данные: ";
+		cin >> data;
+
+		a->add(data);
+	}
+
+
+	print_tree(a, count);
+	
+	cout << "Введите кол-во неповторяющихся данных: ";
+	cin >> count;
+
+	for (int i = 0; i != count; i++) {
+		int data;
+		cout << "Введите данные: ";
+		cin >> data;
+
+		size += a->add_unique(data);
+	}
+
+	print_tree(a, size);
+
+
+	cout << endl << endl << endl;
+
+	cout << "Проверка функции поиска элемента" << endl;
+
+	string search = " ";
+
+	while (search != "NO") {
+		cout << endl << "Продолжить поиск?" << endl << "ДА" << " " << "НЕТ" << endl;
+		cin >> search;
+		cout << endl;
+		if (search == "NO") break;
+		cout << a->find() << endl;
+	}
+
+	search = " ";
+	while (search != "NO") {
+		cout << endl << "Поиск повторов?" << endl << "число" << " или " << "НЕТ" << endl;
+		cin >> search;
+		cout << endl;
+		if (search == "NO") break;
+		cout << a->repeats(stoi(search)) << endl;
+	}
+
+
+	return 0;
+}
